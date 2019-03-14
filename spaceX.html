@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		
+		<!-- bootstrap css -->
+		<link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" />
+
+		<!-- jquery js -->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+		<!-- bootstrap js -->
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.bundle.min.js"></script>
+		
+	</head>
+
+	<body>
+		 <!-- <img src="spaceXBG.jpg"> -->
+		 <div class="shade"></div>
+		 <div class="info">
+			 <p class="launchDate"></p>
+			 <p class="missionName"></p>
+			 <p class="rocketName"></p>
+			 <p class="payload"></p>
+			 <p class="customer"></p>
+			 <button type="button" class="btn btn-dark" class="description">General Description Of Launch</button>
+			 <p class="description"></p>
+			 
+		 </div>
+	</body>
+
+</html>
+
+<style>
+	.shade {
+		width: 100%;
+		height: 100%;
+		background: rgba(0,0,0,0.5);
+		position: absolute;
+		top: 0;
+		left: 0;
+	}
+	
+	.info {
+		color: white;
+		font-size: 32px;
+		margin: 0;
+		transform: translate(-50%,-50%);
+		text-align: center;
+		position: absolute;
+		top: 50%;
+		left: 50%;
+	}
+	
+	.description {
+		display: none;
+	}
+	
+</style>
+
+<script>
+
+	$.getJSON("https://api.spacexdata.com/v3/launches/next", function(data) {
+		console.log(data);
+		var launchDate = data.launch_date_local;
+		var missionName = data.mission_name;
+		var rocketName = data.rocket.rocket_name;
+		var payload;
+		var customer = data.rocket.second_stage.payloads[0].customers;
+		var description = data.details;
+		var currentDateUnix = Math.round((new Date()).getTime() / 1000);
+		var launchDateUnix = data.launch_date_unix;
+		var distance = launchDateUnix - currentDateUnix;
+		var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+		var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+		var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+		var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+		var countdown = days + "d " + hours + "h " + minutes + "m " + seconds + "s ";
+		
+		
+		$(".launchDate").append("Local Date & Time of Next Launch:" + "<br>" + launchDate);
+		$(".missionName").append("Mission Name: " + missionName);
+		$(".rocketName").append("Rocket Name: " + rocketName);
+		$(".customer").append("Customer: " + customer);
+		$(".description").append("General Description of Launch:" + "<br>" + description);
+		$("button").click(function(){
+			$(".description").slideToggle();
+		});
+		console.log(currentDateUnix);
+		console.log(launchDateUnix);
+		
+		var x = setInterval(function() {
+		console.log(countdown);
+		}, 1000);
+	});
+
+</script>
+
